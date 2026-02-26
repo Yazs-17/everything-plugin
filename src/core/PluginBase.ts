@@ -9,7 +9,6 @@ class PluginBase {
     render?: (env: EnvExecutor) => Promise<any>;
     renderAfter?: (env: EnvExecutor) => any;
     destroy?: (env: EnvExecutor) => any;
-    // [key:string]: any
   }
   destroyList = new Set<() => void>();
   constructor(name: string, option: PluginBase['option']) {

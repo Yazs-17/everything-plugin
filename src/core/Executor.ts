@@ -5,6 +5,7 @@ class EnvExecutor {
   state: Record<string, any> & { root: HTMLDivElement } = {
     root: document.createElement('div')
   }
+  #running = false;
   constructor() {
     document.body.append(this.state.root);
     this.pluginDriver.env = this;
@@ -13,14 +14,20 @@ class EnvExecutor {
     this.pluginDriver.batchRegister(plugins);
   }
   start() {
+    this.#running = true;
     this.pluginDriver.hookRender('initialize');
-    requestAnimationFrame(this.#loop)
+    requestAnimationFrame(this.#loop);
   }
   #loop = async () => {
+    if (!this.#running) return;
     await this.pluginDriver.hookRender('renderBefore');
     await this.pluginDriver.hookRender('render');
     await this.pluginDriver.hookRender('renderAfter');
-    requestAnimationFrame(this.#loop)
+    requestAnimationFrame(this.#loop);
+  }
+  destroy() {
+    this.#running = false;
+    this.pluginDriver.hookDestroy('destroy');
   }
 }
 
