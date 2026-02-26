@@ -18,12 +18,20 @@ class EnvExecutor {
     this.pluginDriver.hookRender('initialize');
     requestAnimationFrame(this.#loop);
   }
-  #loop = async () => {
+  #loop = () => {
     if (!this.#running) return;
-    await this.pluginDriver.hookRender('renderBefore');
-    await this.pluginDriver.hookRender('render');
-    await this.pluginDriver.hookRender('renderAfter');
-    requestAnimationFrame(this.#loop);
+
+    const runFrame = async () => {
+      await this.pluginDriver.hookRender('renderBefore');
+      await this.pluginDriver.hookRender('render');
+      await this.pluginDriver.hookRender('renderAfter');
+    };
+
+    runFrame().finally(() => {
+      if (this.#running) {
+        requestAnimationFrame(this.#loop);
+      }
+    });
   }
   destroy() {
     this.#running = false;
