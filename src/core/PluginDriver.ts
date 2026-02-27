@@ -16,16 +16,24 @@ class PluginDriver {
   }
   hookInitialize(hookName: string) {
     this.plugins.forEach((plugin) => {
-      if (typeof plugin[hookName] === 'function') {
-        plugin[hookName](this.env);
+      try {
+        if (typeof plugin[hookName] === 'function') {
+          plugin[hookName](this.env);
+        }
+      } catch (error) {
+        console.error(`[Plugin Error] ${plugin.name} failed at ${hookName}:`, error);
       }
     })
   }
 
   async hookRender(hookName: string) {
     const promises = Array.from(this.plugins.values()).map(async (plugin) => {
-      if (typeof plugin[hookName] === 'function') {
-        await plugin[hookName](this.env);
+      try {
+        if (typeof plugin[hookName] === 'function') {
+          await plugin[hookName](this.env);
+        }
+      } catch (error) {
+        console.error(`[Plugin Error] ${plugin.name} failed at ${hookName}:`, error);
       }
     });
     await Promise.all(promises);
@@ -33,8 +41,12 @@ class PluginDriver {
 
   hookDestroy(hookName: string) {
     this.plugins.forEach((plugin) => {
-      if (typeof plugin[hookName] === 'function') {
-        plugin[hookName](this.env);
+      try {
+        if (typeof plugin[hookName] === 'function') {
+          plugin[hookName](this.env);
+        }
+      } catch (error) {
+        console.error(`[Plugin Error] ${plugin.name} failed at ${hookName}:`, error);
       }
     })
   }
