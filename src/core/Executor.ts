@@ -22,8 +22,11 @@ class EnvExecutor {
     if (!this.#running) return;
 
     const runFrame = async () => {
+      if (!this.#running) return;
       await this.pluginDriver.hookRender('renderBefore');
+      if (!this.#running) return;
       await this.pluginDriver.hookRender('render');
+      if (!this.#running) return;
       await this.pluginDriver.hookRender('renderAfter');
     };
 
