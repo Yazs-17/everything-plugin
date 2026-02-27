@@ -14,6 +14,22 @@ class PluginDriver {
   register(name: string, plugin: PluginBase) {
     this.plugins.set(name, plugin)
   }
+
+  unregister(name: string) {
+    const plugin = this.plugins.get(name);
+    if (plugin) {
+      try {
+        if (typeof plugin.destroy === 'function') {
+          plugin.destroy(this.env);
+        }
+      } catch (error) {
+        console.error(`[Plugin Error] ${plugin.name} failed during unregister cleanup:`, error);
+      }
+      this.plugins.delete(name);
+      console.log(`[PluginDriver: plugin unregistered] ${name}`);
+    }
+  }
+
   hookInitialize(hookName: string) {
     this.plugins.forEach((plugin) => {
       try {
