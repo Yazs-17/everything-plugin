@@ -34,8 +34,13 @@ class PluginBase {
   }
   destroy = (env: EnvExecutor) => {
     for (const destroy of this.destroyList) {
-      destroy();
+      try {
+        destroy();
+      } catch (error) {
+        console.error(`[Plugin Error] ${this.name} failed during cleanup:`, error);
+      }
     }
+    this.destroyList.clear();
     return this.option.destroy?.(env);
   }
 }
