@@ -23,11 +23,12 @@ class PluginDriver {
   }
 
   async hookRender(hookName: string) {
-    for (const plugin of this.plugins.values()) {
+    const promises = Array.from(this.plugins.values()).map(async (plugin) => {
       if (typeof plugin[hookName] === 'function') {
         await plugin[hookName](this.env);
       }
-    }
+    });
+    await Promise.all(promises);
   }
 
   hookDestroy(hookName: string) {
