@@ -15,24 +15,29 @@ class PluginBase {
     this.name = name;
     this.option = option;
   }
-  initialize = (env: EnvExecutor) => {
+
+  initialize(env: EnvExecutor) {
     const result = this.option.initialize?.(env);
     const cleanup = this.option.initializeEventLister?.(env);
     if (typeof cleanup === 'function') {
       this.destroyList.add(cleanup);
     }
-    return result
+    return result;
   }
-  renderBefore = (env: EnvExecutor) => {
+
+  renderBefore(env: EnvExecutor) {
     return this.option.renderBefore?.(env);
   }
-  render = (env: EnvExecutor) => {
-    return this.option.render?.(env)
+
+  render(env: EnvExecutor) {
+    return this.option.render?.(env);
   }
-  renderAfter = (env: EnvExecutor) => {
-    return this.option.renderAfter?.(env)
+
+  renderAfter(env: EnvExecutor) {
+    return this.option.renderAfter?.(env);
   }
-  destroy = (env: EnvExecutor) => {
+
+  destroy(env: EnvExecutor) {
     for (const destroy of this.destroyList) {
       try {
         destroy();
