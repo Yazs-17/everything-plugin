@@ -15,7 +15,8 @@ class EnvExecutor {
   }
   start() {
     this.#running = true;
-    this.pluginDriver.hookRender('initialize');
+    this.pluginDriver.hookInitialize('initialize');
+    this.pluginDriver.hookInitialize('initializeEventListener');
     requestAnimationFrame(this.#loop);
   }
   #loop = () => {

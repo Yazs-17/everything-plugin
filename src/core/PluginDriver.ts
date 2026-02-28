@@ -2,7 +2,7 @@ import { EnvExecutor } from "./Executor";
 import { PluginBase } from "./PluginBase";
 
 class PluginDriver {
-  plugins = new Map();
+  plugins = new Map<string, PluginBase>();
   private pluginArray: PluginBase[] = [];
   env!: EnvExecutor;
 

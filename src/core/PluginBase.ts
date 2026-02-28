@@ -3,12 +3,12 @@ import { EnvExecutor } from "./Executor";
 class PluginBase {
   name: string;
   option: {
-    initialize?: (env: EnvExecutor) => any;
-    initializeEventLister?: (env: EnvExecutor) => (() => void) | any;
-    renderBefore?: (env: EnvExecutor) => any;
-    render?: (env: EnvExecutor) => Promise<any>;
-    renderAfter?: (env: EnvExecutor) => any;
-    destroy?: (env: EnvExecutor) => any;
+    initialize?: (env: EnvExecutor) => unknown;
+    initializeEventListener?: (env: EnvExecutor) => (() => void) | void;
+    renderBefore?: (env: EnvExecutor) => unknown | Promise<unknown>;
+    render?: (env: EnvExecutor) => unknown | Promise<unknown>;
+    renderAfter?: (env: EnvExecutor) => unknown | Promise<unknown>;
+    destroy?: (env: EnvExecutor) => unknown;
   }
   destroyList = new Set<() => void>();
   constructor(name: string, option: PluginBase['option']) {
@@ -18,7 +18,7 @@ class PluginBase {
 
   initialize(env: EnvExecutor) {
     const result = this.option.initialize?.(env);
-    const cleanup = this.option.initializeEventLister?.(env);
+    const cleanup = this.option.initializeEventListener?.(env);
     if (typeof cleanup === 'function') {
       this.destroyList.add(cleanup);
     }
