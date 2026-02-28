@@ -1,5 +1,5 @@
 import { PluginDriver } from "./PluginDriver";
-import { definePlugin, PluginBase } from "./PluginBase";
+import { PluginBase } from "./PluginBase";
 class EnvExecutor {
   pluginDriver = new PluginDriver();
   state: Record<string, any> & { root: HTMLDivElement } = {

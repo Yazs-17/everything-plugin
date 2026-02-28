@@ -37,12 +37,13 @@ class PluginDriver {
     this.pluginArray = Array.from(this.plugins.values());
   }
 
-  hookInitialize(hookName: string) {
+  hookInitialize(hookName: keyof PluginBase) {
     for (let i = 0; i < this.pluginArray.length; i++) {
       const plugin = this.pluginArray[i];
       try {
-        if (typeof plugin[hookName] === 'function') {
-          plugin[hookName](this.env);
+        const hook = plugin[hookName];
+        if (typeof hook === 'function') {
+          (hook as Function).call(plugin, this.env);
         }
       } catch (error) {
         console.error(`[Plugin Error] ${plugin.name} failed at ${hookName}:`, error);
@@ -50,15 +51,16 @@ class PluginDriver {
     }
   }
 
-  async hookRender(hookName: string) {
+  async hookRender(hookName: keyof PluginBase) {
     const promises = [];
     for (let i = 0; i < this.pluginArray.length; i++) {
       const plugin = this.pluginArray[i];
-      if (typeof plugin[hookName] === 'function') {
+      const hook = plugin[hookName];
+      if (typeof hook === 'function') {
         promises.push(
           (async () => {
             try {
-              await plugin[hookName](this.env);
+              await (hook as Function).call(plugin, this.env);
             } catch (error) {
               console.error(`[Plugin Error] ${plugin.name} failed at ${hookName}:`, error);
             }
@@ -69,12 +71,13 @@ class PluginDriver {
     await Promise.all(promises);
   }
 
-  hookDestroy(hookName: string) {
+  hookDestroy(hookName: keyof PluginBase) {
     for (let i = 0; i < this.pluginArray.length; i++) {
       const plugin = this.pluginArray[i];
       try {
-        if (typeof plugin[hookName] === 'function') {
-          plugin[hookName](this.env);
+        const hook = plugin[hookName];
+        if (typeof hook === 'function') {
+          (hook as Function).call(plugin, this.env);
         }
       } catch (error) {
         console.error(`[Plugin Error] ${plugin.name} failed at ${hookName}:`, error);
