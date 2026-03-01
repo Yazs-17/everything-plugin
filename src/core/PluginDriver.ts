@@ -37,7 +37,7 @@ class PluginDriver {
     this.pluginArray = Array.from(this.plugins.values());
   }
 
-  hookInitialize(hookName: keyof PluginBase) {
+  private hookSync(hookName: keyof PluginBase) {
     for (let i = 0; i < this.pluginArray.length; i++) {
       const plugin = this.pluginArray[i];
       try {
@@ -49,6 +49,10 @@ class PluginDriver {
         console.error(`[Plugin Error] ${plugin.name} failed at ${hookName}:`, error);
       }
     }
+  }
+
+  hookInitialize(hookName: keyof PluginBase) {
+    this.hookSync(hookName);
   }
 
   async hookRender(hookName: keyof PluginBase) {
@@ -72,17 +76,7 @@ class PluginDriver {
   }
 
   hookDestroy(hookName: keyof PluginBase) {
-    for (let i = 0; i < this.pluginArray.length; i++) {
-      const plugin = this.pluginArray[i];
-      try {
-        const hook = plugin[hookName];
-        if (typeof hook === 'function') {
-          (hook as Function).call(plugin, this.env);
-        }
-      } catch (error) {
-        console.error(`[Plugin Error] ${plugin.name} failed at ${hookName}:`, error);
-      }
-    }
+    this.hookSync(hookName);
   }
 }
 
