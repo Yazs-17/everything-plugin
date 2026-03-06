@@ -17,5 +17,5 @@ plugin-core/                  # 独立核心库包名
   ├── examples/               # (可选) 存放几个 demo 插件，比如 click.plugin.ts
   ├── dist/                   # 编译产物 (通过 tsup / rollup 构建)
   ├── package.json
-c  └── README.md
+  └── README.md
 ```

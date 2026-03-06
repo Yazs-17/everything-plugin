@@ -1,7 +1,5 @@
 import { definePlugin } from "../../../src";
-export default definePlugin(() => ({
-    name: "resize",
-    // cache: {} as ,
+export default definePlugin("resize", () => ({
 
     initialize: (env) => {
         const info = document.createElement("div");
