@@ -1,5 +1,5 @@
 // import { EnvExecutor } from "../core/Executor";
-import { definePlugin } from "../core/PluginBase";
+import { definePlugin } from "../../../src";
 export default definePlugin(() => ({
     name: "click",
 

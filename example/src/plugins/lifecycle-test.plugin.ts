@@ -1,4 +1,4 @@
-import { definePlugin } from "../core/PluginBase";
+import { definePlugin } from "../../../src";
 import { EnvExecutor } from "../core/Executor";
 
 export const lifecycleTestPlugin = definePlugin(() => {

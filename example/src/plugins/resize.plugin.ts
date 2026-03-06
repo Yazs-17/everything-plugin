@@ -1,4 +1,4 @@
-import { definePlugin } from "../core/PluginBase";
+import { definePlugin } from "../../../src";
 export default definePlugin(() => ({
     name: "resize",
     // cache: {} as ,
