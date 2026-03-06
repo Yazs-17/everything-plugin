@@ -1,9 +1,9 @@
+/** @internal Logger used by core internals. Not part of public API. */
 export const logger = {
-  error: (msg: string, err?: unknown) => {
-    console.error(`[Plugin Core Error] ${msg}`, err || '');
+  error(msg: string, err?: unknown) {
+    console.error(`[PluginCore] ${msg}`, err ?? '');
   },
-  info: (msg: string) => {
-    // only active if debug flag is on, simple version.
-    console.log(`[Plugin Core Info] ${msg}`);
+  info(msg: string) {
+    console.log(`[PluginCore] ${msg}`);
   }
 };

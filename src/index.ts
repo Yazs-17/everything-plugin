@@ -1,6 +1,5 @@
-export * from "./types";
-export * from "./core/PluginBase";
-export * from "./core/PluginDriver";
-export * from "./config/constants";
-export * from "./utils/logger";
+// Public API
+export { PluginBase, definePlugin } from "./core/PluginBase";
+export { PluginDriver } from "./core/PluginDriver";
+export type { PluginOption, PluginBaseInterface, PluginDriverOptions, LifecycleHookName, RenderHookName } from "./types";
 
