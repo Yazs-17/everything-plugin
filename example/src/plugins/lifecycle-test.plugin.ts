@@ -1,12 +1,11 @@
 import { definePlugin } from "../../../src";
 import { EnvExecutor } from "../core/Executor";
 
-export const lifecycleTestPlugin = definePlugin(() => {
+export const lifecycleTestPlugin = definePlugin<EnvExecutor>('lifecycle-test-plugin', () => {
   let tickCount = 0;
   let intervalId: number;
 
   return {
-    name: 'lifecycle-test-plugin',
     
     // 测试同步初始化
     initialize(env: EnvExecutor) {

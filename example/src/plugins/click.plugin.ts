@@ -1,7 +1,5 @@
-// import { EnvExecutor } from "../core/Executor";
 import { definePlugin } from "../../../src";
-export default definePlugin(() => ({
-    name: "click",
+export default definePlugin("click", () => ({
 
     initialize: (env) => {
         const button = document.createElement("button");
