@@ -1,48 +1,43 @@
-import { EnvExecutor } from "./Executor";
+import type { PluginOption, PluginBaseInterface } from "../types";
+import { logger } from "../utils/logger";
 
-class PluginBase {
+export class PluginBase<TEnv> implements PluginBaseInterface<TEnv> {
   name: string;
-  option: {
-    initialize?: (env: EnvExecutor) => unknown;
-    initializeEventListener?: (env: EnvExecutor) => (() => void) | void;
-    renderBefore?: (env: EnvExecutor) => unknown | Promise<unknown>;
-    render?: (env: EnvExecutor) => unknown | Promise<unknown>;
-    renderAfter?: (env: EnvExecutor) => unknown | Promise<unknown>;
-    destroy?: (env: EnvExecutor) => unknown;
-  }
+  option: PluginOption<TEnv>;
   destroyList = new Set<() => void>();
-  constructor(name: string, option: PluginBase['option']) {
+
+  constructor(name: string, option: PluginOption<TEnv>) {
     this.name = name;
     this.option = option;
   }
 
-  initialize(env: EnvExecutor) {
+  initialize(env: TEnv) {
     const result = this.option.initialize?.(env);
     const cleanup = this.option.initializeEventListener?.(env);
-    if (typeof cleanup === 'function') {
+    if (typeof cleanup === "function") {
       this.destroyList.add(cleanup);
     }
     return result;
   }
 
-  renderBefore(env: EnvExecutor) {
+  renderBefore(env: TEnv) {
     return this.option.renderBefore?.(env);
   }
 
-  render(env: EnvExecutor) {
+  render(env: TEnv) {
     return this.option.render?.(env);
   }
 
-  renderAfter(env: EnvExecutor) {
+  renderAfter(env: TEnv) {
     return this.option.renderAfter?.(env);
   }
 
-  destroy(env: EnvExecutor) {
+  destroy(env: TEnv) {
     for (const destroy of this.destroyList) {
       try {
         destroy();
       } catch (error) {
-        console.error(`[Plugin Error] ${this.name} failed during cleanup:`, error);
+        logger.error(`${this.name} failed during cleanup.`, error);
       }
     }
     this.destroyList.clear();
@@ -50,12 +45,10 @@ class PluginBase {
   }
 }
 
-const definePlugin = (optionBuilder: () => PluginBase['option'] & { name: string }) => {
+export function definePlugin<TEnv>(
+  optionBuilder: () => PluginOption<TEnv>
+): PluginBase<TEnv> {
   const option = optionBuilder();
-  return new PluginBase(option.name, option);
+  return new PluginBase<TEnv>(option.name, option);
 }
 
-export {
-  PluginBase,
-  definePlugin,
-}

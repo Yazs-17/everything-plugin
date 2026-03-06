@@ -1,19 +1,20 @@
-import { EnvExecutor } from "./Executor";
 import { PluginBase } from "./PluginBase";
+import { logger } from "../utils/logger";
 
-class PluginDriver {
-  plugins = new Map<string, PluginBase>();
-  private pluginArray: PluginBase[] = [];
-  env!: EnvExecutor;
+export class PluginDriver<TEnv> {
+  plugins = new Map<string, PluginBase<TEnv>>();
+  private pluginArray: PluginBase<TEnv>[] = [];
+  env!: TEnv;
 
-  batchRegister(plugins: PluginBase[]) {
+  batchRegister(plugins: PluginBase<TEnv>[]) {
     plugins.forEach((plugin) => {
       this.register(plugin.name, plugin);
-    })
-    console.log("[PluginDriver: plugins registered]", this.plugins);
+    });
+    logger.info(`[PluginDriver: plugins registered] ${plugins.length}`);
   }
-  register(name: string, plugin: PluginBase) {
-    this.plugins.set(name, plugin)
+
+  register(name: string, plugin: PluginBase<TEnv>) {
+    this.plugins.set(name, plugin);
     this.updatePluginArray();
   }
 
@@ -21,15 +22,15 @@ class PluginDriver {
     const plugin = this.plugins.get(name);
     if (plugin) {
       try {
-        if (typeof plugin.destroy === 'function') {
+        if (typeof plugin.destroy === "function") {
           plugin.destroy(this.env);
         }
       } catch (error) {
-        console.error(`[Plugin Error] ${plugin.name} failed during unregister cleanup:`, error);
+        logger.error(`${plugin.name} failed during unregister cleanup:`, error);
       }
       this.plugins.delete(name);
       this.updatePluginArray();
-      console.log(`[PluginDriver: plugin unregistered] ${name}`);
+      logger.info(`[PluginDriver: plugin unregistered] ${name}`);
     }
   }
 
@@ -37,36 +38,36 @@ class PluginDriver {
     this.pluginArray = Array.from(this.plugins.values());
   }
 
-  private hookSync(hookName: keyof PluginBase) {
+  private hookSync(hookName: keyof PluginBase<TEnv>) {
     for (let i = 0; i < this.pluginArray.length; i++) {
       const plugin = this.pluginArray[i];
       try {
         const hook = plugin[hookName];
-        if (typeof hook === 'function') {
+        if (typeof hook === "function") {
           (hook as Function).call(plugin, this.env);
         }
       } catch (error) {
-        console.error(`[Plugin Error] ${plugin.name} failed at ${hookName}:`, error);
+        logger.error(`${plugin.name} failed at ${hookName}:`, error);
       }
     }
   }
 
-  hookInitialize(hookName: keyof PluginBase) {
-    this.hookSync(hookName);
+  hookInitialize() {
+    this.hookSync("initialize");
   }
 
-  async hookRender(hookName: keyof PluginBase) {
+  async hookRender(hookName: "renderBefore" | "render" | "renderAfter") {
     const promises = [];
     for (let i = 0; i < this.pluginArray.length; i++) {
       const plugin = this.pluginArray[i];
       const hook = plugin[hookName];
-      if (typeof hook === 'function') {
+      if (typeof hook === "function") {
         promises.push(
           (async () => {
             try {
               await (hook as Function).call(plugin, this.env);
             } catch (error) {
-              console.error(`[Plugin Error] ${plugin.name} failed at ${hookName}:`, error);
+              logger.error(`${plugin.name} failed at ${hookName}:`, error);
             }
           })()
         );
@@ -75,11 +76,8 @@ class PluginDriver {
     await Promise.all(promises);
   }
 
-  hookDestroy(hookName: keyof PluginBase) {
-    this.hookSync(hookName);
+  hookDestroy() {
+    this.hookSync("destroy");
   }
 }
 
-export {
-  PluginDriver
-};
