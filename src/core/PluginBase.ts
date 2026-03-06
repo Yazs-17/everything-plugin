@@ -2,8 +2,10 @@ import type { PluginOption, PluginBaseInterface } from "../types";
 import { logger } from "../utils/logger";
 
 export class PluginBase<TEnv> implements PluginBaseInterface<TEnv> {
-  name: string;
+  readonly name: string;
+  /** @internal */
   option: PluginOption<TEnv>;
+  /** @internal */
   destroyList = new Set<() => void>();
 
   constructor(name: string, option: PluginOption<TEnv>) {
@@ -33,22 +35,27 @@ export class PluginBase<TEnv> implements PluginBaseInterface<TEnv> {
   }
 
   destroy(env: TEnv) {
-    for (const destroy of this.destroyList) {
+    for (const cleanup of this.destroyList) {
       try {
-        destroy();
+        cleanup();
       } catch (error) {
         logger.error(`${this.name} failed during cleanup.`, error);
       }
     }
     this.destroyList.clear();
-    return this.option.destroy?.(env);
+    try {
+      return this.option.destroy?.(env);
+    } catch (error) {
+      logger.error(`${this.name} failed during destroy hook.`, error);
+    }
   }
 }
 
 export function definePlugin<TEnv>(
+  name: string,
   optionBuilder: () => PluginOption<TEnv>
 ): PluginBase<TEnv> {
   const option = optionBuilder();
-  return new PluginBase<TEnv>(option.name, option);
+  return new PluginBase<TEnv>(name, option);
 }
 
