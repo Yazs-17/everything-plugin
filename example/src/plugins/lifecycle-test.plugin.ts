@@ -21,7 +21,7 @@ export const lifecycleTestPlugin = definePlugin<EnvExecutor>('lifecycle-test-plu
     },
 
     // 测试事件监听与自动清理机制 (destroyList)
-    initializeEventListener(env: EnvExecutor) {
+    initializeEventListener(_env: EnvExecutor) {
       console.log(`[Plugin:lifecycle-test] 🎧 initializeEventListener() called.`);
       
       const onResize = () => {
@@ -48,7 +48,7 @@ export const lifecycleTestPlugin = definePlugin<EnvExecutor>('lifecycle-test-plu
     },
 
     // 测试渲染前钩子
-    renderBefore(env: EnvExecutor) {
+    renderBefore(_env: EnvExecutor) {
       tickCount++;
       if (tickCount % 60 === 0) { // 大约每秒打印一次
         console.log(`[Plugin:lifecycle-test] ⏳ renderBefore() - Frame: ${tickCount}`);
@@ -56,7 +56,7 @@ export const lifecycleTestPlugin = definePlugin<EnvExecutor>('lifecycle-test-plu
     },
 
     // 测试异步渲染钩子与异常捕获
-    async render(env: EnvExecutor) {
+    async render(_env: EnvExecutor) {
       if (tickCount % 60 === 0) {
         console.log(`[Plugin:lifecycle-test] 🔄 render() - Simulated async work...`);
         await new Promise(resolve => setTimeout(resolve, 5)); // 模拟微小的异步任务

@@ -2,7 +2,7 @@ import { PluginDriver, PluginBase } from "../../../src";
 
 export class EnvExecutor {
   pluginDriver = new PluginDriver<EnvExecutor>();
-  state: Record<string, any> & { root: HTMLDivElement } = {
+  state: Record<string, unknown> & { root: HTMLDivElement } = {
     root: document.createElement("div")
   };
   #running = false;
