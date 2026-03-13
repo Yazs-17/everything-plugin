@@ -80,7 +80,14 @@ export class PluginDriver<TEnv> {
       try {
         const hook = plugin[hookName];
         if (typeof hook === "function") {
-          hook.call(plugin, env);
+          const result = hook.call(plugin, env);
+          // 测试特性：执行阻断 (Bail-out) - 返回 false 则阻断后续插件执行
+          if (result === false) {
+            if (this.options.debugMode) {
+              logger.info(`[PluginDriver] Bail-out at ${hookName} by ${plugin.name}`);
+            }
+            break;
+          }
         }
       } catch (error) {
         logger.error(`${plugin.name} failed at ${hookName}.`, error);
@@ -102,7 +109,14 @@ export class PluginDriver<TEnv> {
         const hook = plugin[hookName];
         if (typeof hook === "function") {
           try {
-            await hook.call(plugin, env);
+            const result = await hook.call(plugin, env);
+            // 测试特性：同步执行支持阻断 (Bail-out) - 返回 false 则阻断并跳过后续所有插件
+            if (result === false) {
+              if (this.options.debugMode) {
+                logger.info(`[PluginDriver] Bail-out at ${hookName} by ${plugin.name}`);
+              }
+              break;
+            }
           } catch (error) {
             logger.error(`${plugin.name} failed at ${hookName}.`, error);
           }
