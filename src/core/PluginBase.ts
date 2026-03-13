@@ -3,6 +3,8 @@ import { logger } from "../utils/logger";
 
 export class PluginBase<TEnv> implements PluginBaseInterface<TEnv> {
   readonly name: string;
+  readonly priority: number;
+  readonly dependencies: string[];
   /** @internal */
   option: PluginOption<TEnv>;
   /** @internal */
@@ -11,6 +13,8 @@ export class PluginBase<TEnv> implements PluginBaseInterface<TEnv> {
   constructor(name: string, option: PluginOption<TEnv>) {
     this.name = name;
     this.option = option;
+    this.priority = option.priority ?? 0;
+    this.dependencies = option.dependencies ?? [];
   }
 
   initialize(env: TEnv) {

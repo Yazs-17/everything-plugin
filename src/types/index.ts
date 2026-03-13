@@ -7,6 +7,8 @@ export type RenderHookName = 'renderBefore' | 'render' | 'renderAfter';
 
 // Plugin option definition (provided by consumers via definePlugin)
 export interface PluginOption<TEnv> {
+  priority?: number;
+  dependencies?: string[];
   initialize?: (env: TEnv) => unknown | Promise<unknown>;
   initializeEventListener?: (env: TEnv) => (() => void) | void;
   renderBefore?: (env: TEnv) => unknown | Promise<unknown>;
@@ -26,6 +28,8 @@ export interface PluginDriverOptions {
 // Public interface contract for PluginBase
 export interface PluginBaseInterface<TEnv> {
   readonly name: string;
+  readonly priority: number;
+  readonly dependencies: string[];
   initialize(env: TEnv): unknown;
   renderBefore(env: TEnv): unknown;
   render(env: TEnv): unknown;

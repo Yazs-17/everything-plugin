@@ -70,7 +70,46 @@ export class PluginDriver<TEnv> {
   }
 
   private updatePluginArray() {
-    this.pluginArray = Array.from(this.plugins.values());
+    const rawPlugins = Array.from(this.plugins.values());
+
+    // Sort by priority first (higher priority = earlier execution)
+    rawPlugins.sort((a, b) => b.priority - a.priority);
+
+    // Topological sort based on dependencies
+    const resolved = new Set<string>();
+    const processing = new Set<string>();
+    const sorted: PluginBase<TEnv>[] = [];
+
+    const visit = (plugin: PluginBase<TEnv>) => {
+      if (processing.has(plugin.name)) {
+        logger.warn(`[PluginDriver] Circular dependency detected involving plugin: ${plugin.name}`);
+        return;
+      }
+      if (resolved.has(plugin.name)) return;
+
+      processing.add(plugin.name);
+
+      for (const dep of plugin.dependencies) {
+        const depPlugin = this.plugins.get(dep);
+        if (depPlugin) {
+          visit(depPlugin);
+        } else if (this.options.debugMode) {
+          logger.warn(`[PluginDriver] Missing dependency: ${dep} (required by ${plugin.name})`);
+        }
+      }
+
+      processing.delete(plugin.name);
+      resolved.add(plugin.name);
+      sorted.push(plugin);
+    };
+
+    for (const plugin of rawPlugins) {
+      if (!resolved.has(plugin.name)) {
+        visit(plugin);
+      }
+    }
+
+    this.pluginArray = sorted;
   }
 
   private hookSync(hookName: LifecycleHookName) {
