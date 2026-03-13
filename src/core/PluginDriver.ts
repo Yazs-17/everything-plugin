@@ -184,6 +184,36 @@ export class PluginDriver<TEnv> {
     await Promise.all(promises);
   }
 
+  // Waterfall hook execution (data flows through plugins)
+  async hookWaterfall<TData = any>(hookName: RenderHookName | LifecycleHookName, args: TData): Promise<TData> {
+    const env = this.env;
+    let currentData = args;
+
+    for (let i = 0; i < this.pluginArray.length; i++) {
+      const plugin = this.pluginArray[i];
+      const hook = plugin[hookName];
+      if (typeof hook === "function") {
+        try {
+          // Pass currentData alongside env to the hook plugin[hookName](env, currentData)
+          // Since the signature of hooks is (env), we might need to change it, or we pass it as a second argument, 
+          // but hooks expect (env). Let's pass (env, currentData) allowing users to extend the hook signature.
+          const result = await (hook as any).call(plugin, env, currentData);
+          
+          if (result === false) {
+            if (this.options.debugMode) {
+              logger.info(`[PluginDriver] Bail-out at ${hookName} by ${plugin.name} in Waterfall`);
+            }
+            break;
+          }
+          currentData = result !== undefined ? result : currentData;
+        } catch (error) {
+          logger.error(`${plugin.name} failed at ${hookName} (Waterfall).`, error);
+        }
+      }
+    }
+    return currentData;
+  }
+
   hookDestroy() {
     this.hookSync("destroy");
   }
