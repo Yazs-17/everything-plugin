@@ -38,7 +38,7 @@ export class PluginBase<TEnv> implements PluginBaseInterface<TEnv> {
     return (this.option.renderAfter as any)?.(env, ...args);
   }
 
-  destroy(env: TEnv, ...args: any[]) {
+  destroy(env: TEnv, ..._args: any[]) {
     for (const cleanup of this.destroyList) {
       try {
         cleanup();

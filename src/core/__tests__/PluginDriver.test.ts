@@ -142,7 +142,7 @@ describe('PluginDriver', () => {
       async render(env) { env.log.push('p1'); }
     }));
     const p2 = definePlugin<{ log: string[] }>('p2', () => ({
-      async render(env) { throw new Error('render fail'); }
+      async render(_env) { throw new Error('render fail'); }
     }));
     driver.register(p1.name, p1);
     driver.register(p2.name, p2);
@@ -177,16 +177,16 @@ describe('PluginDriver', () => {
     const driver = new PluginDriver<{ count: number }>({ count: 0 }, { debugMode: true });
     
     const p1 = definePlugin('seq1', () => ({
-      render(env, data: number) { return data + 1; }
+      render(_env, data: number) { return data + 1; }
     }));
     const pError = definePlugin('err', () => ({
-      render(env, data: number) { throw new Error('oops'); }
+      render(_env, _data: number) { throw new Error('oops'); }
     }));
     const p2 = definePlugin('seq2', () => ({
-      render(env, data: number) { return false; } 
+      render(_env, _data: number) { return false; } 
     }));
     const p3 = definePlugin('seq3', () => ({
-      render(env, data: number) { return data + 10; } 
+      render(_env, data: number) { return data + 10; } 
     }));
 
     driver.batchRegister([p1, pError, p2, p3]);
