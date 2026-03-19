@@ -3,6 +3,8 @@ import { logger } from "../utils/logger";
 
 export class PluginBase<TEnv> implements PluginBaseInterface<TEnv> {
   readonly name: string;
+  readonly priority: number;
+  readonly dependencies: string[];
   /** @internal */
   option: PluginOption<TEnv>;
   /** @internal */
@@ -11,10 +13,12 @@ export class PluginBase<TEnv> implements PluginBaseInterface<TEnv> {
   constructor(name: string, option: PluginOption<TEnv>) {
     this.name = name;
     this.option = option;
+    this.priority = option.priority ?? 0;
+    this.dependencies = option.dependencies ?? [];
   }
 
-  initialize(env: TEnv) {
-    const result = this.option.initialize?.(env);
+  initialize(env: TEnv, ...args: any[]) {
+    const result = (this.option.initialize as any)?.(env, ...args);
     const cleanup = this.option.initializeEventListener?.(env);
     if (typeof cleanup === "function") {
       this.destroyList.add(cleanup);
@@ -22,19 +26,19 @@ export class PluginBase<TEnv> implements PluginBaseInterface<TEnv> {
     return result;
   }
 
-  renderBefore(env: TEnv) {
-    return this.option.renderBefore?.(env);
+  renderBefore(env: TEnv, ...args: any[]) {
+    return (this.option.renderBefore as any)?.(env, ...args);
   }
 
-  render(env: TEnv) {
-    return this.option.render?.(env);
+  render(env: TEnv, ...args: any[]) {
+    return (this.option.render as any)?.(env, ...args);
   }
 
-  renderAfter(env: TEnv) {
-    return this.option.renderAfter?.(env);
+  renderAfter(env: TEnv, ...args: any[]) {
+    return (this.option.renderAfter as any)?.(env, ...args);
   }
 
-  destroy(env: TEnv) {
+  destroy(env: TEnv, ..._args: any[]) {
     for (const cleanup of this.destroyList) {
       try {
         cleanup();
