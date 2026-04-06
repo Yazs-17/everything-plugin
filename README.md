@@ -5,3 +5,7 @@
 overall, it use the lifecycle architecture.
 
 I always believe that every single sys can be design as a plugin for a powerful core.
+
+## Now TODO
+
+add tsup/rollup, build .js and .cjs files, and add types.
