@@ -1,4 +1,4 @@
-import { definePlugin } from "../../../src";
+import { definePlugin } from "../../../../src";
 export default definePlugin("click", () => ({
 
     initialize: (env) => {

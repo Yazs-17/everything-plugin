@@ -1,4 +1,4 @@
-import { PluginDriver, PluginBase } from "../../../src";
+import { PluginDriver, PluginBase } from "../../../../src";
 
 export class EnvExecutor {
   pluginDriver = new PluginDriver<EnvExecutor>();

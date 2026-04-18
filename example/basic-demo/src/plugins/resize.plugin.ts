@@ -1,4 +1,4 @@
-import { definePlugin } from "../../../src";
+import { definePlugin } from "../../../../src";
 export default definePlugin("resize", () => ({
 
     initialize: (env) => {
