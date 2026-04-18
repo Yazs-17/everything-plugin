@@ -1,0 +1,17 @@
+{
+  "name": "quillcode-demo",
+  "version": "1.0.0",
+  "description": "advanced demo of everything-plugin for a note-taking system",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@yazs/everything-plugin": "latest"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}
